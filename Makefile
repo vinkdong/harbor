@@ -73,7 +73,7 @@ CHECKENVCMD=checkenv.sh
 
 # parameters
 REGISTRYSERVER=
-REGISTRYPROJECTNAME=goharbor
+REGISTRYPROJECTNAME=vinkdong
 DEVFLAG=true
 NOTARYFLAG=false
 CLAIRFLAG=false
@@ -91,7 +91,7 @@ GEN_TLS=
 VERSIONTAG=dev
 # for base docker image tag
 BASEIMAGETAG=dev
-BASEIMAGENAMESPACE=goharbor
+BASEIMAGENAMESPACE=vinkdong
 # for harbor package name
 PKGVERSIONTAG=dev
 
@@ -220,14 +220,14 @@ MAKEFILEPATH_PHOTON=$(MAKEPATH)/photon
 DOCKERFILEPATH_COMMON=$(MAKEPATH)/common
 
 # docker image name
-DOCKER_IMAGE_NAME_PREPARE=goharbor/prepare
-DOCKERIMAGENAME_PORTAL=goharbor/harbor-portal
-DOCKERIMAGENAME_CORE=goharbor/harbor-core
-DOCKERIMAGENAME_JOBSERVICE=goharbor/harbor-jobservice
-DOCKERIMAGENAME_LOG=goharbor/harbor-log
-DOCKERIMAGENAME_DB=goharbor/harbor-db
-DOCKERIMAGENAME_CHART_SERVER=goharbor/chartmuseum-photon
-DOCKERIMAGENAME_REGCTL=goharbor/harbor-registryctl
+DOCKER_IMAGE_NAME_PREPARE=vinkdong/prepare
+DOCKERIMAGENAME_PORTAL=vinkdong/harbor-portal
+DOCKERIMAGENAME_CORE=vinkdong/harbor-core
+DOCKERIMAGENAME_JOBSERVICE=vinkdong/harbor-jobservice
+DOCKERIMAGENAME_LOG=vinkdong/harbor-log
+DOCKERIMAGENAME_DB=vinkdong/harbor-db
+DOCKERIMAGENAME_CHART_SERVER=vinkdong/chartmuseum-photon
+DOCKERIMAGENAME_REGCTL=vinkdong/harbor-registryctl
 
 # docker-compose files
 DOCKERCOMPOSEFILEPATH=$(MAKEPATH)
@@ -255,7 +255,7 @@ HARBORPKG=harbor
 # pushimage
 PUSHSCRIPTPATH=$(MAKEPATH)
 PUSHSCRIPTNAME=pushimage.sh
-REGISTRYUSER=user
+REGISTRYUSER=vinkdong
 REGISTRYPASSWORD=default
 
 # cmds
@@ -266,9 +266,9 @@ DOCKERSAVE_PARA=$(DOCKER_IMAGE_NAME_PREPARE):$(VERSIONTAG) \
 		$(DOCKERIMAGENAME_DB):$(VERSIONTAG) \
 		$(DOCKERIMAGENAME_JOBSERVICE):$(VERSIONTAG) \
 		$(DOCKERIMAGENAME_REGCTL):$(VERSIONTAG) \
-		goharbor/redis-photon:$(VERSIONTAG) \
-		goharbor/nginx-photon:$(VERSIONTAG) \
-		goharbor/registry-photon:$(VERSIONTAG)
+		vinkdong/redis-photon:$(VERSIONTAG) \
+		vinkdong/nginx-photon:$(VERSIONTAG) \
+		vinkdong/registry-photon:$(VERSIONTAG)
 
 PACKAGE_OFFLINE_PARA=-zcvf harbor-offline-installer-$(PKGVERSIONTAG).tgz \
 					$(HARBORPKG)/$(DOCKERIMGFILE).$(VERSIONTAG).tar.gz \
@@ -287,20 +287,20 @@ PACKAGE_ONLINE_PARA=-zcvf harbor-online-installer-$(PKGVERSIONTAG).tgz \
 DOCKERCOMPOSE_FILE_OPT=-f $(DOCKERCOMPOSEFILEPATH)/$(DOCKERCOMPOSEFILENAME)
 
 ifeq ($(NOTARYFLAG), true)
-	DOCKERSAVE_PARA+= goharbor/notary-server-photon:$(VERSIONTAG) goharbor/notary-signer-photon:$(VERSIONTAG)
+	DOCKERSAVE_PARA+= vinkdong/notary-server-photon:$(VERSIONTAG) vinkdong/notary-signer-photon:$(VERSIONTAG)
 endif
 ifeq ($(CLAIRFLAG), true)
-	DOCKERSAVE_PARA+= goharbor/clair-photon:$(VERSIONTAG) goharbor/clair-adapter-photon:$(VERSIONTAG)
+	DOCKERSAVE_PARA+= vinkdong/clair-photon:$(VERSIONTAG) vinkdong/clair-adapter-photon:$(VERSIONTAG)
 endif
 ifeq ($(TRIVYFLAG), true)
-	DOCKERSAVE_PARA+= goharbor/trivy-adapter-photon:$(VERSIONTAG)
+	DOCKERSAVE_PARA+= vinkdong/trivy-adapter-photon:$(VERSIONTAG)
 endif
 # append chartmuseum parameters if set
 ifeq ($(CHARTFLAG), true)
 	DOCKERSAVE_PARA+= $(DOCKERIMAGENAME_CHART_SERVER):$(VERSIONTAG)
 endif
 
-SWAGGER_IMAGENAME=goharbor/swagger
+SWAGGER_IMAGENAME=vinkdong/swagger
 SWAGGER_VERSION=v0.21.0
 SWAGGER=$(DOCKERCMD) run --rm -u $(shell id -u):$(shell id -g) -v $(BUILDPATH):$(BUILDPATH) -w $(BUILDPATH) ${SWAGGER_IMAGENAME}:${SWAGGER_VERSION}
 SWAGGER_GENERATE_SERVER=${SWAGGER} generate server --template-dir=$(TOOLSPATH)/swagger/templates --exclude-main
@@ -356,15 +356,15 @@ compile: check_environment versions_prepare compile_core compile_jobservice comp
 
 update_prepare_version:
 	@echo "substitute the prepare version tag in prepare file..."
-	@$(SEDCMDI) -e 's/goharbor\/prepare:.*[[:space:]]\+/goharbor\/prepare:$(VERSIONTAG) prepare /' $(MAKEPATH)/prepare ;
+	@$(SEDCMDI) -e 's/vinkdong\/prepare:.*[[:space:]]\+/vinkdong\/prepare:$(VERSIONTAG) prepare /' $(MAKEPATH)/prepare ;
 
 gen_tls:
-	@$(DOCKERCMD) run --rm -v /:/hostfs:z goharbor/prepare:$(VERSIONTAG) gencert -p /etc/harbor/tls/internal
+	@$(DOCKERCMD) run --rm -v /:/hostfs:z vinkdong/prepare:$(VERSIONTAG) gencert -p /etc/harbor/tls/internal
 
 prepare: update_prepare_version
 	@echo "preparing..."
 	@if [ -n "$(GEN_TLS)" ] ; then \
-		$(DOCKERCMD) run --rm -v /:/hostfs:z goharbor/prepare:$(VERSIONTAG) gencert -p /etc/harbor/tls/internal; \
+		$(DOCKERCMD) run --rm -v /:/hostfs:z vinkdong/prepare:$(VERSIONTAG) gencert -p /etc/harbor/tls/internal; \
 	fi
 	@$(MAKEPATH)/$(PREPARECMD) $(PREPARECMD_PARA)
 
